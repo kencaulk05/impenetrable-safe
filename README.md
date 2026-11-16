@@ -2,8 +2,6 @@
 
 A box that opens only when you show it the right three digits **with your fingers**. A webcam looks at your hand, a small convolutional neural network (CNN) that I trained from scratch counts the fingers (0 to 5), and an Arduino UNO Q runs the lock: it checks the code, opens the door with a motor, checks with a distance sensor that the door really moved, and raises an alarm if somebody forces the door.
 
-ME193 midterm. **The write-up, the demo videos and the explainer movie are on the Notion page** (see `docs/notion_midterm_page.md` for its text): [link to the Notion page]
-
 ## What is in this repository
 
 | Folder | What it is |
@@ -37,25 +35,11 @@ Each folder has its own README with how to run it, what was tested and what was 
 | On the real box: lockout, relock, door | 30 s, 10 s, closes to 106 mm, 3 of 3 |
 | On the real box: locked and untouched | 6 min 11 s with no false alarm; the forced door was detected 3 of 3 times |
 
-## Tests
-
-Every project has tests that run without any hardware (simulated camera, board, door and browser). Counts when last run: laptop project 210, V-fit 52, lock box 313, finger board 165, door controller 168, ultrasonic test 112, motor test 143.
-
-```
-python part1-v-fit/tests/test_v_fit.py
-python part2-laptop-finger-lock/tests/test_lock.py      (and test_capture, test_train, test_predict)
-cd board-lock-box/tests && python run_all.py            (the same in each board and hardware folder)
-```
-(The board tests need `numpy` and `opencv-python`; the page tests need `node` and `npm install jsdom`; the sketch tests need `g++`. Anything missing is skipped and said so.)
-
-**None of the board code has been compiled with Arduino's own tools by anyone but the board itself when the app was run; the simulated tests cannot prove that the real hardware behaves the same.**
 
 ## Privacy and security
 
-- **The 2,400 training pictures are not in this repository.** They are pictures of people's hands; the people are called A and B everywhere.
+- **The 2,400 training pictures are not in this repository.** 
 - **No real code is stored here.** The box keeps only a salted hash, in `lock_config.json` on the board, which git ignores. **But the examples and tests in this repository use the codes 1-5-3, 2-4-5 and 3-1-4, so do not use those on a real box.** Anyone who has seen the demo videos has also seen the fingers.
 - It is a classroom lock: three different digits from 1 to 5 are only 60 codes; the control page can set a new code without the old one and sends it unencrypted over the local network; the maintenance buttons bypass the code; and the motor does not hold the door shut, it only detects and reports a forced one. The limitations are written out in `docs/notion_midterm_page.md`.
 
-## Credits
 
-Part 1 uses the "V" data and the neural-network page ("AnnaCode") from the ME193 course repository, as the assignment says.
