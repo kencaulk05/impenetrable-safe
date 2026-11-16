@@ -39,7 +39,6 @@ Each folder has its own README with how to run it, what was tested and what was 
 ## Privacy and security
 
 - **The 2,400 training pictures are not in this repository.** 
-- **No real code is stored here.** The box keeps only a salted hash, in `lock_config.json` on the board, which git ignores. **But the examples and tests in this repository use the codes 1-5-3, 2-4-5 and 3-1-4, so do not use those on a real box.** Anyone who has seen the demo videos has also seen the fingers.
 - It is a classroom lock: three different digits from 1 to 5 are only 60 codes; the control page can set a new code without the old one and sends it unencrypted over the local network; the maintenance buttons bypass the code; and the motor does not hold the door shut, it only detects and reports a forced one. The limitations are written out in `docs/notion_midterm_page.md`.
 
 
