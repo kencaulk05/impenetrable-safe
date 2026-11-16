@@ -2,7 +2,7 @@
 
 Part 1 of the lock project: find the weights of a model by gradient descent, by hand, on the V example from AnnaCode: first one neuron, then a neuron with a ReLU, then a hidden layer of ReLU neurons. There is a NumPy version with every gradient written out, a PyTorch version that checks it, and a spreadsheet whose five iterations are live formulas.
 
-**The data** is AnnaCode's "V" example, generated the way its code generates it (`network/training.py`): 120 random points, x uniform on 20 to 100, y = 2|x - 60| plus Gaussian noise of 2. AnnaCode draws new points every time; here they come from a fixed seed (0) so every number below can be reproduced. To fit other points, such as data saved from AnnaCode, put them in a CSV with columns `x,y` and add `--data file.csv` to the commands below.
+**The data** is AnnaCode's "V" example: 120 random points, x uniform on 20 to 100, y = 2|x - 60| plus Gaussian noise of 2. AnnaCode draws new points every time; here they come from a fixed seed (0) so every number below can be reproduced. To fit other points, such as data saved from AnnaCode, put them in a CSV with columns `x,y` and add `--data file.csv` to the commands below.
 
 ## Run it
 
@@ -42,13 +42,3 @@ tests/test_v_fit.py       the checks
 ## The spreadsheet
 
 `Class layout` follows the class page: one column per data point, and for each epoch a block of rows, `guess`, `db = guess - y` and `dm = db x`; the averages of the `dm` and `db` rows give the next m and b. Five epochs of that are the five iterations. `Single neuron` holds the same five iterations as a compact table (loss, both gradients, the new m and b, and the line in the original units) with `SUMPRODUCT`, plus two charts, and a check cell that confirms the two sheets agree. `ReLU neuron` does five iterations for one neuron with a ReLU. The yellow cells (learning rate, starting values) can be changed and everything recalculates. The workbook's numbers equal the Python's to 13 decimals.
-
-## How this relates to AnnaCode's code
-
-AnnaCode's training (`network/training.py`) rescales x and y, starts with small random weights and zero biases, runs a forward pass that keeps what backpropagation needs, computes a delta of 2 x error x f'(pre) at the output, passes errors back layer by layer, averages and clips every gradient to +-5, and steps each weight by its learning rate. The NumPy code here follows that recipe for one hidden layer; it is not a copy of her code.
-
-## Limits
-
-- One fixed draw of the V's random points (AnnaCode draws new ones every time), so the exact numbers change with the points, though the story did not in the tests I tried.
-- The surveys of random starts use 10 starts per width, and the validation uses one fresh draw: small experiments.
-- The single neuron's start and learning rate (m_hat = 1, b_hat = -1, 0.1), and the ReLU layers' learning rate (0.05) were chosen to make the plots clear, not tuned for the best fit.
