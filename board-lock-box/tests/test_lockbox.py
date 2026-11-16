@@ -223,7 +223,7 @@ for _ in range(250): s.box._log("system", "info", "x")
 expect("only the last 60 log entries are sent, and only 200 kept", len(s.box.snapshot()["log"]) == 60 and len(s.box.log) == 200)
 n = s.box.drain_notices(); expect("the notices (denied, locked) are handed out once", len(s.box.drain_notices()) == 0)
 
-print("12. the measurements for the report")
+print("12. the measurements")
 class Perf:
     def __init__(self): self.t = 0.0
     def __call__(self): self.t += 0.125; return self.t                   # every reading of this clock is 125 ms later than the one before

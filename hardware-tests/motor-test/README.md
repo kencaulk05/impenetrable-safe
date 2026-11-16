@@ -19,8 +19,8 @@ Step 2 of testing the lock box hardware, one part at a time. This app tests the 
 - The sketch has a **soft start**: each move begins at the lowest speed and climbs to the chosen speed over the soft-start time (250 ms to begin with), which spares the rail.
 - Keep the speed modest and the moves short. The page starts you at speed 150; **try about 100 and 300 ms first, with a soft start of 500 ms**.
 - A **capacitor** is a precaution, **not a requirement**. When a motor starts it draws several times its running current for a few hundredths of a second, and a capacitor is a small local reservoir that supplies that surge, so that the shared rail does not sag. **If you do not have one, try without it** (the soft start already spreads the surge out, and a one-motor door is a lighter load than two motors), and add one only if you see the warning signs below. If you do add one: 470 to 1000 microfarad, rated 10 V or more, across the Maker Drive's power input and close to it, the **+ leg to the 5V side and the - leg (the striped one) to GND**: it is polarised, and backwards it can burst. A 100 nF ceramic capacitor across the motor's two terminals also quiets its electrical noise.
-- The UNO Q must be fed by a proper **5 V / 3 A** source (your battery through the hub, as long as it can supply that). The board, the webcam and the motor all share that 3 A; a laptop's USB port is not enough.
-- **Warning signs:** the board resets or reboots when the motor starts, the webcam drops out, the LED matrix flickers, this page disconnects. If that happens: lower the speed and the time first, and lengthen the soft start; if it still happens, add a capacitor (any electrolytic of 470 microfarad or more, rated 10 V or more, will do). The clean fix is a second supply: if your battery has a second USB port, a spare USB cable cut open gives 5 V (red) and GND (black) for the Maker Drive, with its GND joined to the UNO Q's GND.
+- The UNO Q must be fed by a proper **5 V / 3 A** source (for example a battery through the hub, if it can supply that). The board, the webcam and the motor all share that 3 A; a laptop's USB port is not enough.
+- **Warning signs:** the board resets or reboots when the motor starts, the webcam drops out, the LED matrix flickers, this page disconnects. If that happens: lower the speed and the time first, and lengthen the soft start; if it still happens, add a capacitor (any electrolytic of 470 microfarad or more, rated 10 V or more, will do). The clean fix is a second supply: if the battery has a second USB port, a spare USB cable cut open gives 5 V (red) and GND (black) for the Maker Drive, with its GND joined to the UNO Q's GND.
 
 **The motor cannot be left running.** The sketch ends every move by itself after the time asked, never allows more than 3 seconds, and stops at once when told. The motor is off from the moment the board starts. **STOP is Esc, or the Space bar while the motor is moving.**
 
@@ -28,7 +28,7 @@ Step 2 of testing the lock box hardware, one part at a time. This app tests the 
 
 ## Run it
 
-Copy this folder into Arduino App Lab as an app and press Run (like the step counter). Then open **`http://<the board's address>:7000`** in the browser on your laptop. While the motor runs, the LED matrix shows an arrow in its direction.
+Copy this folder into Arduino App Lab as an app and press Run. Then open **`http://<the board's address>:7000`** in the browser on your laptop. While the motor runs, the LED matrix shows an arrow in its direction.
 
 ## Use it
 
@@ -44,19 +44,7 @@ Do these in order:
 2. **Open and close fully.** Raise the time (and the speed a little if the door barely moves) until it reaches the end without grinding. Rate each move.
 3. **The shortest times that work,** for opening and for closing separately, at the lowest speed that moves the door reliably.
 4. **Trouble signs:** the board resetting or the webcam dropping out, a hum without movement, grinding at the end.
-5. **With the door closed and the motor stopped,** push the door open by hand. How hard is it? (The yellow TT gearbox is not self-locking, so the door may be easy to push open, which decides how we hold it shut.)
-
-## What to send me
-
-| | |
-|---|---|
-| Which way the motor turned at first, and whether you ticked Swap direction | ___ |
-| Time to open and time to close that reach the end without grinding, and the speed | ___ ms and ___ ms at speed ___ |
-| The soft start you ended up with | ___ ms |
-| Did the board reset, the webcam drop out or the page disconnect when the motor started? What powers the Maker Drive, and is the capacitor in? | ___ |
-| Any hum, grinding, or door overshoot | ___ |
-| With the motor off, how hard is it to push the closed door open? | ___ |
-| `python/moves.csv` (or the CSV from the page) | attach it |
+5. **With the door closed and the motor stopped,** push the door open by hand. How hard is it? (The yellow TT gearbox is not self-locking.)
 
 ## Files
 
@@ -71,6 +59,10 @@ tests/test_motortest.py                                the Python side
 tests/test_page.js                                     the page in a simulated browser (needs node and: npm install jsdom)
 ```
 
-## What was tested, and what was not
+## Result
 
-`python tests/run_all.py` runs 39 checks of the sketch (against simulated motor pins: the direction, the timeout, the 3-second cap, the stop, the soft start, the speed limits, the arrow), 62 of the Python side (the settings limits and memory, the moves and directions, refusing a new move while the motor runs, an always-allowed stop, confirmations, including the board's message arriving before the call returns, lost or missing confirmations, a board that does not answer, ratings and the log) and 42 of the page (Space starts a move and stops a moving motor, Esc always stops, Space cannot click a focused button or fire while you type, the settings are cut to their limits and never overwritten by the board's old copy, the table is not rebuilt under a drop-down you are using). **None of it has run on the real board or in a real browser.** The sketch has not been compiled with Arduino's own tools; how the Maker Drive behaves when both of its inputs are low (coast or brake) is not known; and how much current your motor and door really draw from the 5V pin is not known.
+The settings that reached the end without grinding on the real door: direction -1, 600 ms to open and 600 ms to close at speed 100, soft start 250 ms. They are the starting values of the door controller.
+
+## Tests
+
+`python tests/run_all.py` runs 39 checks of the sketch (against simulated motor pins: the direction, the timeout, the 3-second cap, the stop, the soft start, the speed limits, the arrow), 62 of the Python side (the settings limits and memory, the moves and directions, refusing a new move while the motor runs, an always-allowed stop, confirmations, including the board's message arriving before the call returns, lost or missing confirmations, a board that does not answer, ratings and the log) and 42 of the page (Space starts a move and stops a moving motor, Esc always stops, Space cannot click a focused button or fire while you type, the settings are cut to their limits and never overwritten by the board's old copy, the table is not rebuilt under a drop-down you are using).

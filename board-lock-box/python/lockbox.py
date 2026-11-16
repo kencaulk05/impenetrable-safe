@@ -50,7 +50,7 @@ class LockBox:
         self._load()
         self._log("system", "started", "The app started.")
 
-    # ---- the measurements for the report (the tally, the times, how long it has been locked quietly)
+    # ---- the measurements (the tally, the times, how long it has been locked quietly)
     @staticmethod
     def _new_stats():
         return {"sessions": 0, "unlocked": 0, "denied_code": 0, "denied_challenge": 0, "timeouts": 0, "lockouts": 0, "tamper": 0, "faults": 0, "unlock_times": [], "open_times": [], "check_ms": []}

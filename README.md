@@ -6,15 +6,14 @@ A box that opens only when you show it the right three digits **with your finger
 
 | Folder | What it is |
 |---|---|
-| `part1-v-fit/` | Part 1: fitting the "V" data with one neuron and a ReLU layer: the gradient-descent math, the Excel file (five iterations), the Python plots |
-| `part2-laptop-finger-lock/` | Part 2, on the laptop: capturing pictures, training the CNN in PyTorch, honest testing, the live finger counter and the lock demo |
+| `part1-v-fit/` | Part 1: fitting the "V" data by gradient descent: five iterations in Excel (`v_fit.xlsx`) and the Python with its plots (`v_fit.py`) |
+| `part2-laptop-finger-lock/` | Part 2, on the laptop: capturing pictures, training the CNN in PyTorch, testing it, the live finger counter and the lock demo |
 | `models/finger-lock-model-v2/` | the trained network (PyTorch file and the NumPy copy that runs on the board) |
 | `board-lock-box/` | **the lock, on the UNO Q** (an Arduino App Lab app): camera, network, lock rules, door, LED matrix, web page |
 | `board-finger-board/` | the finger-counting network on the UNO Q on its own, with a speed benchmark (the "UNO Q vs computer" numbers) |
 | `hardware-tests/` | the door piece by piece: `ultrasonic-test/`, `motor-test/`, and `door-controller/` (both together) |
-| `docs/` | the Notion page text, the script of the stop-action explainer movie, the V-fit write-up, and a study guide of the laptop project |
 
-Each folder has its own README with how to run it, what was tested and what was not.
+Each folder has its own README with how to run it and how it was tested.
 
 ## How it works, in short
 
@@ -35,10 +34,7 @@ Each folder has its own README with how to run it, what was tested and what was 
 | On the real box: lockout, relock, door | 30 s, 10 s, closes to 106 mm, 3 of 3 |
 | On the real box: locked and untouched | 6 min 11 s with no false alarm; the forced door was detected 3 of 3 times |
 
-
 ## Privacy and security
 
-- **The 2,400 training pictures are not in this repository.** 
-- It is a classroom lock: three different digits from 1 to 5 are only 60 codes; the control page can set a new code without the old one and sends it unencrypted over the local network; the maintenance buttons bypass the code; and the motor does not hold the door shut, it only detects and reports a forced one. The limitations are written out in `docs/notion_midterm_page.md`.
-
-
+- **The 2,400 training pictures are not in this repository.**
+- It is a classroom lock: three different digits from 1 to 5 are only 60 codes; the control page can set a new code without the old one and sends it unencrypted over the local network; the maintenance buttons bypass the code; and the motor does not hold the door shut, it only detects and reports a forced one. The limitations are written out in `board-lock-box/README.md`.

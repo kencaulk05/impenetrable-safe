@@ -1,12 +1,12 @@
 # Finger-counting lock
 
-Hold up fingers under a webcam, and a neural network, written in PyTorch, counts them; three different numbers in the right order open the box. Step 1 is **collecting the pictures** (`capture.py`), step 2 is **training the network** (`train.py`). The lock policy and the UNO Q port come next.
+Hold up fingers under a webcam, and a neural network, written in PyTorch, counts them; three different numbers in the right order open the box. Step 1 is **collecting the pictures** (`capture.py`), step 2 is **training the network** (`train.py`), step 3 is **the lock** on the laptop (`lock_demo.py`). The same network and lock rules run on the UNO Q in `board-lock-box`.
 
 **Six classes: 0, 1, 2, 3, 4 and 5 fingers.** Class 0 is an empty square or a closed fist, so the network can say "nothing here", and the lock only uses 1 to 5.
 
 ## Set it up (once)
 
-1. **Fix the camera.** Put the webcam on a stand, looking straight down at the desk, at a distance that never changes (the stand should not be able to slide). Use the same webcam, the same stand and the same lighting as you will use for the lock, and later on the UNO Q.
+1. **Fix the camera.** Put the webcam on a stand, looking straight down at the desk, at a distance that never changes (the stand should not be able to slide). Use the same webcam, the same stand and the same lighting as for the lock on the UNO Q.
 2. **Mark a square on the desk** with tape or a thick marker line, about a hand and a half wide, so a spread hand fits inside with room to move. Any colour that stands out from the desk works with the automatic finder: red (the default), blue, green or yellow (`--tape blue`). Only the inside of the square is ever used, so every picture has the same size and scale and the network never has to cope with zooming.
 
    **The tape is only a guide for you.** The square the pictures are cut from is stored in the software (`roi.json`, in pixel coordinates), and you can set it by dragging a box with the mouse, with no tape at all. The tape is still worth having: with your hand under the camera you cannot see an invisible box, and the finished lock will have no screen to show it. If you move the stand, set the square again.
@@ -32,7 +32,7 @@ A window shows the camera and a small second window shows what the network will 
 - Show each number the way you naturally would, and also vary it: slightly different finger positions, left and right hands, the hand moved around the square, tilted, a little further up or down, slightly spread or relaxed.
 - Hold the hand the same general way each time (fingers pointing away from you, back of the hand to the camera) unless you also want the network to learn other views.
 - Class 0: the empty square, and a closed fist, in different places and tilts.
-- **Ask other people** (family, classmates) to give you a few hundred pictures each. A network trained on one person's hands usually fails on someone else's, and "worked for different people's hands" is part of the grade.
+- **Ask other people** (family, classmates) to give you a few hundred pictures each. A network trained on one person's hands usually does worse on someone else's.
 - 3 is usually the hardest number (it is easy to confuse with 2 and 4): take extra of it, in different finger combinations.
 - **Light the board from above, close to the camera, not from one side.** A lamp at the side casts a dark shadow of each finger on the white board, and the first network learned to count the shadow as an extra finger: single fingers with a clear shadow were called "2" with about 80% confidence. A lamp right next to or above the camera puts the shadows behind the hand.
 - **Decide how the thumb counts, and keep it the same.** The thumb caused most of the network's confusions. Pictures labelled 1 that were thumbs-up were called 0 or 2, and 4 and 5 were swapped between sessions and people, because the thumb was sometimes out and sometimes folded. A simple rule that works: 1 to 4 are shown with the fingers and the thumb folded, and 5 is the open hand with the thumb out. Do not use a thumbs-up for 1.
@@ -61,7 +61,7 @@ python train.py --data data/raw --final-only    # skip the tests: about a quarte
 
 The network (`fingerlock/model.py`) has three convolution stages of different sizes (16, 32 and 64 filters), each followed by ReLU and 2 x 2 max pooling, so the 64 x 64 picture shrinks to 32, 16 and 8 pixels while the feature maps grow. The output of all three stages is squeezed to a 4 x 4 grid, joined (1,792 numbers), and one linear layer turns them into six scores, one per class. It has 35,110 weights and learns with cross-entropy loss (softmax turns the six scores into probabilities, and the loss is -ln of the probability given to the true class). Pictures are made more varied while training by rotating, shifting and zooming them a little, mirroring them, changing the brightness, contrast and colour, and adding a touch of noise. The mirror must be *across* the direction the fingers point (it turns a left hand into a right hand without turning the fingers around), which is why `--flip` exists.
 
-**What it measures** (`results/summary.md`, written for you). In each test the network is trained **without any picture of what it is tested on**, always for the full number of epochs, so nothing is chosen using the test pictures:
+**What it measures** (written to `results/summary.md`). In each test the network is trained **without any picture of what it is tested on**, always for the full number of epochs, so nothing is chosen using the test pictures:
 
 - **A new person:** trained on everyone else, tested on that person. Needs at least two people.
 - **A new session:** trained on the earlier sessions, tested on the last one (a different time and light). Needs pictures taken more than an hour apart (`--session-gap` changes the hour). For a lock that will be used by the people who trained it, this is the number that matters most.
@@ -69,7 +69,7 @@ The network (`fingerlock/model.py`) has three convolution stages of different si
 
 `confusion_*.png` shows which numbers get mixed up (rows: the truth, columns: what the network said), `curves.png` the loss and accuracy while training, and `mistakes_new_session.png` some of the pictures it got wrong. A burst saves 20 almost identical pictures, which is why pictures are never split frame by frame between training and testing: that would test the network on near-copies of what it learned from.
 
-It writes `models/finger_cnn.pt` (PyTorch) and `models/finger_cnn.npz` (the same network in plain NumPy, which is what the UNO Q will run; `fingerlock/infer_numpy.py` matches PyTorch to about 1e-6). The whole run (the tests and the final network) takes roughly 15 to 30 minutes on a laptop CPU with a couple of thousand pictures; `--final-only` is much quicker.
+It writes `models/finger_cnn.pt` (PyTorch) and `models/finger_cnn.npz` (the same network in plain NumPy, which is what the UNO Q runs; `fingerlock/infer_numpy.py` matches PyTorch to about 1e-6).
 
 ## Try the network live
 
@@ -77,11 +77,11 @@ It writes `models/finger_cnn.pt` (PyTorch) and `models/finger_cnn.npz` (the same
 python predict_live.py --model models/finger_cnn.npz --data data/raw --camera 3
 ```
 
-It reads the square from `data/raw/roi.json` (so it is exactly the square the network was trained on: do not move the camera or the stand), cuts it out the way the capture tool did, and shows the network's answer on the live picture: six probability bars, the time per picture, and **"sure: N"** only when the answer is steady (the last 8 pictures average above 60% and at least 75% of them agree). **`s` saves the current picture** into `live_saved/`, which is the best way to keep the cases the network gets wrong and add them to the training data. It uses the NumPy copy of the network, so it also shows roughly what the UNO Q will run.
+It reads the square from `data/raw/roi.json` (so it is exactly the square the network was trained on: do not move the camera or the stand), cuts it out the way the capture tool did, and shows the network's answer on the live picture: six probability bars, the time per picture, and **"sure: N"** only when the answer is steady (the last 8 pictures average above 60% and at least 75% of them agree). **`s` saves the current picture** into `live_saved/`, which is the best way to keep the cases the network gets wrong and add them to the training data. It uses the NumPy copy of the network, the same code that runs on the UNO Q.
 
-## Results so far (two people, two sessions)
+## Results (two people, two sessions)
 
-2,400 pictures: two people, 200 of each number from each, in two sessions about ten hours apart (a new session starts after a gap of more than an hour with no pictures taken; the clock times of the sessions were not recorded in local time) (so the light was probably not the same). 64 x 64 colour pictures, 80 epochs (with twice the pictures, 80 epochs is the same number of learning steps as 150 epochs on half of them). Every test trains without any picture of what it is tested on:
+2,400 pictures: two people, 200 of each number from each, in two sessions about ten hours apart (a new session starts after a gap of more than an hour with no pictures taken). 64 x 64 colour pictures, 80 epochs (with twice the pictures, 80 epochs is the same number of learning steps as 150 epochs on half of them). Every test trains without any picture of what it is tested on:
 
 | test | accuracy | per class (0 to 5) |
 |---|---|---|
@@ -98,7 +98,7 @@ Each test is one training run, so differences of a few points are noise. With ab
 - **4 and 5 are swapped**: in the new-session test 90 of 200 fours were called 5, and in the new-person test on A, 90 of 200 fives were called 4. Whether the thumb is out or folded was not the same in every session and for every person.
 - 2 is often called 3 (fingers that touch look like one thick finger from above).
 
-These are problems of the **labels and poses** more than of the network. Choosing one clear pose per number (see "What to collect") and removing the unclear pictures should help more than changing the network.
+These are problems of the **labels and poses** more than of the network, which is why "What to collect" sets one clear pose per number and `review_labels.py` finds the unclear pictures.
 
 ## Does the position of the hand in the square matter?
 
@@ -112,7 +112,7 @@ Yes. In the training pictures the hand sits in a narrow band: for 80% of the pic
 | left by 12 px | 60% | 85% |
 | right by 12 px (fingertips leave the square) | 56% | 73% |
 
-So with the usual augmentation a hand pushed 10 to 20% off its normal place loses 10 to 25 points, more when it moves sideways, and the stronger shift and zoom augmentation removes most of that loss without costing accuracy for a hand in its normal place. It is a cheap fix because it needs no new pictures; `train.py` now takes `--shift` and `--zoom` (the defaults are unchanged). The natural variation inside the session 2 pictures points the same way: hands whose fingertips reached farther right were recognised more often (73%, 79% and 81% for the three thirds), and hands held high in the square did worst with the usual augmentation (66%, against 83% and 84%), but this is mixed up with which numbers were being shown. In a live test the owner of the hand found it did better with the hand closer to the top edge; that was two short tests, and the measurements above do not confirm it, so it may come from something else (light, shadow, how the fingers were held).
+So with the usual augmentation a hand pushed 10 to 20% off its normal place loses 10 to 25 points, more when it moves sideways, and the stronger shift and zoom augmentation removes most of that loss without costing accuracy for a hand in its normal place. It is a cheap fix because it needs no new pictures; `train.py` now takes `--shift` and `--zoom` (the defaults are unchanged). The natural variation inside the session 2 pictures points the same way: hands whose fingertips reached farther right were recognised more often (73%, 79% and 81% for the three thirds), and hands held high in the square did worst with the usual augmentation (66%, against 83% and 84%), but this is mixed up with which numbers were being shown.
 
 **For the lock:** mark the spot where the hand should go with tape (hand roughly in the middle, fingertips about three quarters of the way to the right edge), train with `--shift 0.18 --zoom 0.15`, and keep the fingertips inside the square.
 
@@ -135,7 +135,7 @@ python lock_demo.py --headless-demo 153 # no camera: a scripted run of the owner
 python lock_analysis.py --results results/results.json --challenge 1    # how good is each code, and how long does guessing take?
 ```
 
-SPACE is the button. After pressing it, show three **different** digits from 1 to 5 one after another under the camera. The window shows the camera with the square and a dashed box where hands usually were when the network learned (keep the hand and the fingertips in it), and a panel with the status, the LED matrix drawn big, what the network sees, and a log in words. **`docs/DEMO.md` is a checklist for a live demo.** The lock rules are in `fingerlock/lock.py` (no camera or motor in it, so every rule is tested) and the LED-matrix pictures in `fingerlock/matrix.py`.
+SPACE is the button. After pressing it, show three **different** digits from 1 to 5 one after another under the camera. The window shows the camera with the square and a dashed box where hands usually were when the network learned (keep the hand and the fingertips in it), and a panel with the status, the LED matrix drawn big, what the network sees, and a log in words. The lock rules are in `fingerlock/lock.py` (no camera or motor in it, so every rule is tested) and the LED-matrix pictures in `fingerlock/matrix.py`.
 
 **The policy.** Walk to the safe, press the button, the LEDs light, show the digits. A digit is read only when the network's answer has been the same, with at least 60% average probability and at least 75% of the frames agreeing, for 8 frames in a row (so a blur or a hand on its way in does not count), and the hand has gone to rest (a fist or an empty square, class 0) since the last digit (so holding up one number is one digit, not three). Class 0 is never a digit. After the third digit the box unlocks if the code is right and the entry is dropped if not; the box closes again by itself after 10 seconds, or at once when the button is pressed. Three wrong entries in a row cause a lockout of 30 seconds, and each following lockout is twice as long (up to an hour); a right code clears the count. An entry that is too slow (10 seconds for a digit, 30 for all of it) is dropped without counting as a wrong try. The events the lock reports say what was *read*, never whether it was *right*, so the LEDs cannot give the code away. Every number above is a setting (`Policy` in `lock.py`).
 
@@ -155,14 +155,14 @@ SPACE is the button. After pressing it, show three **different** digits from 1 t
 
 The network reads 1 (94%), 5 (99%) and 3 (78%) best and 4 (52%) and 2 (66%) worst, so a code from 1, 3 and 5 is the one that works for its owner. The best codes are also slightly *easier* for a random intruder (2.6% against 1.7%), because wrong digits are read as the code's digits: 4 is read as 5 in 45% of cases and 2 as 3 in 30%. Guessing all 60 codes (20 seconds a try, a guesser who never repeats a code) takes about 15 minutes on average with a constant 30-second lockout, and about **4.8 hours** on average (13 hours at worst) with lockouts that double each time. These figures assume each digit is read independently, that a wrong reading is not corrected by holding longer, and a random guesser; the matrix comes from two people in one setup.
 
-**Limits of the lock** (what to say in the report):
+**Limits of the lock:**
 
 1. **Only 60 codes**, and the hash cannot protect them: whoever has the config file has the code. Lockouts slow down guessing at the camera, nothing more.
 2. **The network makes mistakes.** Even the best code is read right on only 73% of single attempts (98% within three), and the digits 2 and 4 are unreliable.
 3. **Two people, one camera, one setup.** The numbers come from two people with similar skin tones; a different hand, a different light or a moved camera or box can be much worse, and the network is tied to the exact square it was trained on.
 4. **Photos and recordings.** A photo of a hand showing each digit may fool the camera, and the live challenge only makes a recording work 1 time in 5 (1 in 25 with two digits).
 5. **Shoulder surfing:** anyone who sees your fingers learns the code. The challenge does not hide it.
-6. **The box is only as strong as its latch and walls**, and a motor lock with no feedback depends on end-stop switches.
+6. **The box is only as strong as its door and walls.** The motor does not hold the door shut; on the UNO Q a distance sensor detects a forced door (see `board-lock-box`).
 7. **Frame rate:** the digit must be held for 8 frames; on a slower camera or on the UNO Q that takes longer than on the laptop.
 
 ## Try it without a webcam
@@ -196,11 +196,10 @@ set_code.py                chooses the code and writes lock_config.json (a salte
 lock_demo.py               the lock on the computer: webcam, network, rules, matrix drawn on screen
 lock_analysis.py           scores all 60 codes with the measured confusion matrix, and the time to guess
 tests/test_lock.py         78 checks: the rules, the challenge and replay, lockouts, the matrix pictures, the analysis against a simulation, the demo window
-docs/DEMO.md               a checklist for a live demo
 ```
 
 ## Limits
 
-- The results above are from **two people** (similar skin tones, one camera, one setup) in two sessions. A new person with a different skin tone, hand size or pose can be worse. The live demo (`predict_live.py`) has been tested only with a made-up camera, not a real webcam.
-- The window application itself (`capture.py`'s live loop with a real webcam, the mouse drag and the keyboard) was not run with a real camera: everything it relies on is tested, and the loop is exercised with the made-up camera. Your Diccik webcam may need `--camera 1` or a different `--width` and `--height`; the tool prints what resolution the camera actually accepted, and whether it let autofocus be switched off.
+- The results above are from **two people** (similar skin tones, one camera, one setup) in two sessions. A new person with a different skin tone, hand size or pose can be worse.
+- The camera index and size depend on the computer: use `--camera`, `--width` and `--height`; the tool prints what resolution the camera accepted, and whether it let autofocus be switched off.
 - The tape finder depends on colour, so it can fail in odd lighting: drag a box instead.
