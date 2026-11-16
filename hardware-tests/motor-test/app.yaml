@@ -1,0 +1,6 @@
+name: Motor Test
+description: Tests the DC motor that swings the door, on its own, through the Cytron Maker Drive. A web page on your laptop (port 7000) has big OPEN, CLOSE and STOP controls; the SPACE bar makes the next move (open, then close, then open ...) and pressing it again while the motor runs, or pressing Esc, stops it. Set the speed, the soft start and how long each move lasts, and note after each move how it went. The sketch ends every move by itself after at most 3 seconds.
+ports: []
+bricks:
+- arduino:web_ui: {}
+icon: ⚙️

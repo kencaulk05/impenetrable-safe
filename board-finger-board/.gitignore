@@ -1,0 +1,6 @@
+python/roi.json
+python/board_speed.csv
+__pycache__/
+tests/state_samples.json
+tests/node_modules/
+python/camera.json

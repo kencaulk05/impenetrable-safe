@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finger lock box</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Finger lock box</h1>
+    <span id="conn" class="chip bad">connecting…</span>
+    <span id="camera" class="chip">camera: ?</span>
+    <span id="doorchip" class="chip">door: ?</span>
+    <span id="codechip" class="chip">code: ?</span>
+  </header>
+  <main>
+    <section class="status">
+      <div id="banner" class="banner unknown">…</div>
+      <div id="hint" class="hint"></div>
+      <div class="statusrow">
+        <div class="ledbox">
+          <div class="label">the LED matrix on the box</div>
+          <div id="matrix" class="matrix"></div>
+        </div>
+        <div class="challengebox" id="challengebox" hidden>
+          <div class="label">show this digit first</div>
+          <div id="bigChallenge" class="bigdigit"></div>
+        </div>
+        <div class="dotsbox" id="dotsbox" hidden>
+          <div class="label">digits read</div>
+          <div id="dots" class="dots"></div>
+        </div>
+        <div class="pushbox">
+          <button id="pushBtn" class="push">PUSH THE BUTTON<br><small>(the Space bar)</small></button>
+          <div class="note">Then show your hand in the square under the camera. <kbd>Esc</kbd> stops the door motor at any time.</div>
+        </div>
+      </div>
+      <div id="notice" class="notice"></div>
+    </section>
+
+    <div class="grid">
+      <section>
+        <h2>What the camera sees</h2>
+        <div class="frame">
+          <img id="frame" alt="the camera picture">
+          <div id="roi" class="roi"></div>
+          <div id="nopic" class="nopic">no camera picture yet</div>
+        </div>
+        <div class="digitrow">
+          <div><span class="label">the network's answer</span><div id="digit" class="digit">–</div><div id="conf" class="note">&nbsp;</div></div>
+          <div><span class="label">steady?</span><span id="steady" class="chip">–</span></div>
+          <div><span class="label">the picture it gets</span><img id="crop" class="pix" alt="the crop"></div>
+        </div>
+        <div id="bars" class="bars"></div>
+      </section>
+
+      <section>
+        <h2>The door</h2>
+        <div class="live"><span id="mm" class="big">–</span><span class="unit">mm</span> <span id="band" class="bandchip">–</span></div>
+        <div id="doorinfo" class="note"></div>
+        <div class="row">
+          <button id="stopBtn" class="stop">STOP (Esc)</button>
+        </div>
+        <details>
+          <summary>Maintenance <span class="note">(these bypass the code)</span></summary>
+          <div class="row">
+            <button id="openBtn">Open the door</button>
+            <button id="closeBtn">Close the door</button>
+            <button id="calBtn">Calibrate the closed distance</button>
+            <label class="check"><input id="pushBack" type="checkbox"> Push back when forced</label>
+          </div>
+          <div class="note">Calibrate reads the closed distance from the sensor (the door closed by the motor and still for 3 seconds). "Push back" makes the motor try once to shut a forced door.</div>
+        </details>
+      </section>
+    </div>
+
+    <section>
+      <h2>The code</h2>
+      <div id="policy" class="note"></div>
+      <div class="row">
+        <label>New code (3 different digits, 1 to 5) <input id="code" type="password" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="•••"></label>
+        <label>Again <input id="confirm" type="password" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="•••"></label>
+        <label>Live challenge <select id="challenge"><option value="1">1 digit first</option><option value="2">2 digits first</option><option value="0">off</option></select></label>
+        <label>Challenge digits <select id="pool"><option value="135">1, 3, 5 (read best)</option><option value="12345">1 to 5</option></select></label>
+        <button id="saveCode" class="primary">Save the code</button>
+      </div>
+      <div class="note">Only a salted hash is stored, never the digits, and the digits are never written to the log. But this page sends the code to the board over your local network without encryption, and three different digits from 1 to 5 are only 60 possible codes.</div>
+    </section>
+
+    <section>
+      <details id="squareBox">
+        <summary><b>Camera and square</b> <span class="note">(open this to move the square with the arrow keys)</span></summary>
+        <div class="note" id="roiSource"></div>
+        <div class="row">
+          <button id="left">◀</button><button id="up">▲</button><button id="down">▼</button><button id="right">▶</button>
+          <button id="smaller">smaller −</button><button id="bigger">bigger +</button>
+          <label>Tape colour <select id="color"><option value="blue">blue</option><option value="red">red</option><option value="green">green</option><option value="yellow">yellow</option></select></label>
+          <button id="find">Find the tape square</button>
+          <button id="saveRoi" class="primary">Save the square</button>
+          <button id="resetRoi">Back to the training square</button>
+        </div>
+        <div class="row">
+          <label>Picture format <select id="fmt"><option value="MJPG">MJPG (compressed)</option><option value="YUYV">YUYV (uncompressed)</option><option value="">the camera chooses</option></select></label>
+          <button id="applyFmt">Apply (reopens the camera)</button>
+          <span class="note">Camera: <span id="camfps">–</span> pictures a second, network: <span id="netfps">–</span> steps a second.</span>
+        </div>
+        <div class="note">The network was trained on the square at x 108, y 163, side 317 (at 640 × 480). Arrow keys move the square by 4 pixels (Shift: 16), + and − resize it.</div>
+      </details>
+    </section>
+
+    <section>
+      <h2>Measurements for the report</h2>
+      <div class="row">
+        <button id="resetStats" class="primary">Reset the tally</button>
+        <button id="wholeLog">Download the whole log (CSV)</button>
+        <span class="note">Press "Reset the tally" before each person's tries. A "try" is one press of the button.</span>
+      </div>
+      <div class="stats">
+        <div><span class="label">tries (button pressed)</span><b id="sSessions">0</b></div>
+        <div><span class="label">opened the door</span><b id="sUnlocked">0</b></div>
+        <div><span class="label">wrong code</span><b id="sCode">0</b></div>
+        <div><span class="label">wrong challenge digit</span><b id="sChallenge">0</b></div>
+        <div><span class="label">too slow</span><b id="sTimeouts">0</b></div>
+        <div><span class="label">lockouts</span><b id="sLockouts">0</b></div>
+        <div><span class="label">tamper alarms</span><b id="sTamper">0</b></div>
+        <div><span class="label">door or sensor faults</span><b id="sFaults">0</b></div>
+      </div>
+      <div class="stats">
+        <div><span class="label">button to unlocked</span><b id="sUnlock">–</b></div>
+        <div><span class="label">unlocked to the door open</span><b id="sOpen">–</b></div>
+        <div><span class="label">code check (the page may pause this long)</span><b id="sCheck">–</b></div>
+        <div><span class="label">camera pictures a second / network steps a second</span><b id="sSpeed">–</b></div>
+        <div><span class="label">locked with no alarm for</span><b id="sLocked">0:00</b></div>
+        <div><span class="label">the app has been running for</span><b id="sUptime">0:00</b></div>
+      </div>
+      <div class="note">"Locked with no alarm for" starts again after any alarm or fault: leave the closed box alone and watch it reach 5:00. "The app has been running for" going back to 0:00 means the app restarted (a reset): write down when.</div>
+    </section>
+
+    <section>
+      <h2>Log</h2>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>time</th><th>from</th><th>event</th><th>what happened</th></tr></thead>
+          <tbody id="logRows"></tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button id="csv">Download this list as CSV</button>
+        <button id="clearLog">Clear the list</button>
+        <span class="note">The board also keeps everything in lockbox_log.csv. It never records which digits were shown, only that a digit was read.</span>
+      </div>
+    </section>
+
+    <section class="help">
+      <h2>How to use it</h2>
+      <ol>
+        <li><b>First time:</b> set a code (three different digits from 1 to 5) in "The code".</li>
+        <li><b>To open the box:</b> press the Space bar (the button). The LED matrix shows a digit with a dotted line underneath: show that digit to the camera first. Then show your three digits one at a time: hold each number up until the progress dots move on, then make a fist or take your hand away before the next one. A correct code opens the door; it locks again after 10 seconds, or when you press the button.</li>
+        <li><b>Wrong code:</b> three wrong tries in a row lock it out for 30 seconds (then longer each time). Being too slow is not counted as a wrong try.</li>
+        <li><b>Tamper:</b> if the locked door is forced, the page says TAMPER, finger entry is blocked for 15 seconds, and it is written in the log. It does not count as a wrong try.</li>
+      </ol>
+    </section>
+  </main>
+  <script src="libs/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

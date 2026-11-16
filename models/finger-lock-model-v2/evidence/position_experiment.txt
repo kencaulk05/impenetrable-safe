@@ -1,0 +1,14 @@
+
+=== trained on the session 1 pictures only, usual augmentation (shift up to 8% of the box) (269 s) ===
+accuracy on the session 2 pictures: 81.3%
+hand moved UP(-) / DOWN(+) by (pixels of 64; 6 px = about 10% of the box):  -12: 71%  -8: 79%  -4: 81%  +0: 81%  +4: 79%  +8: 73%  +12: 67%
+hand moved LEFT(-) / RIGHT(+), fingertips leaving the box on the right:     -12: 60%  -8: 77%  -4: 83%  +0: 81%  +4: 74%  +8: 68%  +12: 56%
+natural variation, by vertical middle of the hand in the box (0 = top, 127 = bottom):  lowest third (40 to 61): 66% of 325  middle third (61 to 69): 83% of 327  highest third (69 to 88): 84% of 348
+natural variation, by how far right the fingertips reach (127 = the right edge):  lowest third (66 to 107): 73% of 320  middle third (107 to 117): 79% of 349  highest third (117 to 127): 81% of 331
+
+=== trained on the session 1 pictures only, stronger shift augmentation (up to 18%, zoom 0.85 to 1.15) (213 s) ===
+accuracy on the session 2 pictures: 84.1%
+hand moved UP(-) / DOWN(+) by (pixels of 64; 6 px = about 10% of the box):  -12: 80%  -8: 84%  -4: 85%  +0: 84%  +4: 84%  +8: 84%  +12: 81%
+hand moved LEFT(-) / RIGHT(+), fingertips leaving the box on the right:     -12: 85%  -8: 88%  -4: 86%  +0: 84%  +4: 82%  +8: 81%  +12: 73%
+natural variation, by vertical middle of the hand in the box (0 = top, 127 = bottom):  lowest third (40 to 61): 74% of 325  middle third (61 to 69): 83% of 327  highest third (69 to 88): 86% of 348
+natural variation, by how far right the fingertips reach (127 = the right edge):  lowest third (66 to 107): 72% of 320  middle third (107 to 117): 81% of 349  highest third (117 to 127): 90% of 331

@@ -1,0 +1,6 @@
+name: Door Controller
+description: "The door of the lock box, with the HC-SR04 sensor and the DC motor working together. A web page on your laptop (port 7000) shows whether the door is closed, ajar, open or blocked from the distance, opens and closes it (the SPACE bar is the push-button), checks after every move that it really worked, and raises a TAMPER alarm when the locked door is forced. Esc stops the motor. Settings and events are kept in files."
+ports: []
+bricks:
+- arduino:web_ui: {}
+icon: 🚪

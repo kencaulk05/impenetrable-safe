@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ultrasonic sensor test</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Ultrasonic sensor test</h1>
+    <span id="conn" class="chip bad">connecting…</span>
+    <span id="sensor" class="chip">sensor: ?</span>
+  </header>
+  <main>
+    <section class="live">
+      <div class="big"><span id="mm">–</span><span class="unit">mm</span></div>
+      <div class="sub"><span id="cm"></span> · raw reading: <span id="raw">–</span> · usable in the last 3 s: <span id="okpct">–</span></div>
+      <canvas id="chart" width="900" height="180"></canvas>
+      <div class="note">The last 15 seconds (the filtered distance: the middle of the last 5 readings). The LED matrix on the board shows the same distance as a bar.</div>
+    </section>
+
+    <section>
+      <h2>Capture <kbd>Space</kbd></h2>
+      <p>Hold the sensor and what it is looking at <b>still</b>, then press the <b>Space bar</b> (or the button): it records the readings for a few seconds and tells you how good they were.</p>
+      <div class="row">
+        <label>Looking at
+          <select id="label">
+            <option data-kind="closed">door closed</option>
+            <option data-kind="ajar">door pushed open about 1 cm</option>
+            <option data-kind="ajar">door pushed open about 3 cm</option>
+            <option data-kind="open">door fully open (nothing in front of the sensor)</option>
+            <option value="__other" data-kind="other">other…</option>
+          </select>
+        </label>
+        <input id="custom" type="text" maxlength="60" placeholder="e.g. a book held at 100 mm" hidden>
+        <label>Sensor powered from
+          <select id="supply"><option value="3V3">3V3</option><option value="5V">5V</option></select>
+        </label>
+        <label>Seconds <input id="seconds" type="number" min="1" max="60" value="5"></label>
+        <button id="capture" class="primary">Capture (Space bar)</button>
+      </div>
+      <div id="progress" class="progress"></div>
+      <div id="notice" class="notice"></div>
+    </section>
+
+    <section>
+      <h2>Captures</h2>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>time</th><th>looking at</th><th>power</th><th>length</th><th>usable readings</th><th>average (mm)</th><th>median (mm)</th><th>range (mm)</th><th>spread (mm)</th><th>verdict</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button id="csv">Download as CSV</button>
+        <button id="clear">Clear the table</button>
+        <span class="note">The board also keeps every capture in captures.csv.</span>
+      </div>
+    </section>
+
+    <section class="help">
+      <h2>What to try, in order</h2>
+      <ol>
+        <li><b>Aim.</b> Watch the big number while you point the sensor at the inside of the door. It should be steady and make sense (about how far is it, in millimetres?). No number, or "no echo": check the wiring and the power.</li>
+        <li><b>Power test.</b> With the sensor on <b>3V3</b>, capture "door closed" (say 5 s). Then move its VCC wire to <b>5V</b>, choose 5V above, and capture again. Compare the "usable readings" and the "spread". If 3V3 gives at least 90% usable and a small spread, keep 3V3.</li>
+        <li><b>Door closed.</b> Capture "door closed": this is the distance X the lock will watch for.</li>
+        <li><b>Tamper.</b> With the door closed, push it open by hand about 1 cm and capture; then about 3 cm and capture. The distance should grow, and the sensor should still see the door.</li>
+        <li><b>Door fully open.</b> Open the door all the way and capture. If the door has left the sensor's view, <b>no echo, or a far distance, is the right answer</b> (it is not a fault): the lock will treat that as "door open".</li>
+      </ol>
+      <p><b>How to read the verdict</b> (for "door closed", "pushed open" and "other"): GOOD = spread of 2 mm or less; OK = up to 5 mm; POOR = jumpy, or fewer than 90% usable readings; BAD = fewer than half usable (nothing useful is coming back). For "door fully open" the verdict says whether nothing is in view (expected), or something far away is, or the wall behind is.</p>
+    </section>
+  </main>
+  <script src="libs/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

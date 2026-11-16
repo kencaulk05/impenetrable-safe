@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motor test</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Motor test</h1>
+    <span id="conn" class="chip bad">connecting…</span>
+    <span id="motor" class="chip">motor: ?</span>
+  </header>
+  <main>
+    <div class="safety"><b>Safety.</b> Hold the door the first time and keep fingers out of its swing. <b>STOP: press Esc, or the Space bar while the motor is moving.</b> The board ends every move by itself after at most 3 seconds, even if this page goes away. Do not hold the door shut against the motor.</div>
+
+    <section>
+      <h2>Move</h2>
+      <div class="door">Door believed: <b id="door">closed</b> · the next move is: <b id="next">open</b> <span id="remaining" class="remaining"></span></div>
+      <div class="row">
+        <button id="nextBtn" class="primary">Next move (Space bar)</button>
+        <button id="openBtn">Open</button>
+        <button id="closeBtn">Close</button>
+        <button id="stopBtn" class="stop">STOP (Esc)</button>
+      </div>
+      <div class="row small">If the door is really somewhere else, tell it: the door is now
+        <button id="isClosed">closed</button> <button id="isOpen">open</button>
+      </div>
+      <div id="notice" class="notice"></div>
+    </section>
+
+    <section>
+      <h2>Settings</h2>
+      <div class="row">
+        <label>Speed <span id="pwmVal" class="val">150</span>
+          <input id="pwm" type="range" min="60" max="255" step="5" value="150">
+        </label>
+        <label>Soft start <span id="rampVal" class="val">250</span> ms
+          <input id="ramp" type="range" min="0" max="1000" step="50" value="250">
+        </label>
+        <label>Time to open (ms) <input id="openMs" type="number" min="50" max="3000" step="50" value="600"></label>
+        <label>Time to close (ms) <input id="closeMs" type="number" min="50" max="3000" step="50" value="600"></label>
+        <label class="check"><input id="swap" type="checkbox"> Swap direction</label>
+      </div>
+      <div class="note">Start gently: a speed of about 100 and 300 ms. Raise the time until the door reaches the end, then rate each move below. If the door goes the wrong way for "open", tick <b>Swap direction</b>. The soft start climbs from the lowest speed to the chosen speed over that time, which spares the 5 V rail when the motor shares it with the board. The settings are remembered after a restart.</div>
+    </section>
+
+    <section>
+      <h2>Moves</h2>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>#</th><th>time</th><th>move</th><th>motor direction</th><th>time (ms)</th><th>speed</th><th>soft start (ms)</th><th>board confirmed</th><th>how did it go?</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button id="csv">Download as CSV</button>
+        <button id="clear">Clear the table</button>
+        <span class="note">The board also keeps every move in moves.csv.</span>
+      </div>
+    </section>
+
+    <section class="help">
+      <h2>What to try, in order</h2>
+      <ol>
+        <li><b>Direction.</b> With the door held, press the Space bar once at a low speed (about 100) and a short time (300 ms). Which way did the door go? If it went the wrong way for "open", tick <b>Swap direction</b>.</li>
+        <li><b>Open and close fully.</b> Raise the time (and the speed a little if the door barely moves) until it reaches the end without grinding. After each move, say how it went.</li>
+        <li><b>Find the shortest time that works,</b> for opening and for closing separately (they can differ), at the lowest speed that moves the door reliably.</li>
+        <li><b>Watch for trouble:</b> the board resetting or the webcam dropping out when the motor starts (the motor shares the power), a hum without movement, or grinding at the end.</li>
+      </ol>
+    </section>
+  </main>
+  <script src="libs/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

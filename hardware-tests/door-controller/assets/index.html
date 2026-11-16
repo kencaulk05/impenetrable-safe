@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Door controller</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Door controller</h1>
+    <span id="conn" class="chip bad">connecting…</span>
+    <span id="sensor" class="chip">sensor: ?</span>
+  </header>
+  <main>
+    <div class="safety"><b>Safety.</b> Hold the door the first time and keep fingers out of its swing. <b>STOP: press Esc, or the Space bar while the door is moving.</b> The board ends every motor move by itself after at most 3 seconds, even if this page goes away.</div>
+
+    <section class="status">
+      <div id="headline" class="headline unknown">…</div>
+      <div id="sub" class="sub"></div>
+      <div class="live"><span id="mm" class="big">–</span><span class="unit">mm</span> <span id="band" class="bandchip">–</span></div>
+      <canvas id="chart" width="900" height="200"></canvas>
+      <div class="note">The last 30 seconds. The green strip is the closed band, the dashed line is the open limit; a grey tick at the top means "no echo".</div>
+    </section>
+
+    <section>
+      <h2>Control <kbd>Space</kbd></h2>
+      <div class="row">
+        <button id="toggleBtn" class="primary">Open the door (Space bar)</button>
+        <button id="openBtn">Open</button>
+        <button id="closeBtn">Close</button>
+        <button id="stopBtn" class="stop">STOP (Esc)</button>
+        <button id="calBtn">Calibrate the closed distance</button>
+        <label class="check"><input id="pushBack" type="checkbox"> Push back when forced</label>
+      </div>
+      <div id="notice" class="notice"></div>
+    </section>
+
+    <section>
+      <h2>Settings</h2>
+      <div class="row">
+        <label>Closed distance (mm) <input id="closedMm" type="number" min="30" max="1000" step="1" value="96"></label>
+        <label>Closed band ± (mm) <input id="tolMm" type="number" min="5" max="40" step="1" value="15"></label>
+        <label>Open beyond (mm) <input id="openMm" type="number" min="60" max="3500" step="10" value="250"></label>
+        <label>Speed <input id="pwm" type="number" min="60" max="255" step="5" value="100"></label>
+        <label>Soft start (ms) <input id="ramp" type="number" min="0" max="1000" step="50" value="250"></label>
+        <label>Time to open (ms) <input id="openMs" type="number" min="50" max="3000" step="50" value="600"></label>
+        <label>Time to close (ms) <input id="closeMs" type="number" min="50" max="3000" step="50" value="600"></label>
+        <label>Motor direction to open
+          <select id="openDir"><option value="-1">-1 (the one that worked)</option><option value="1">+1</option></select>
+        </label>
+        <button id="saveBtn">Save settings</button>
+      </div>
+      <div class="note">The starting values are the ones that worked on your door. <b>Calibrate</b> reads the closed distance from the sensor (the door must be closed and still for 3 seconds); do it again after the motor closes the door, because the closed distance may differ a little from when you closed it by hand. The settings are kept in a file on the board.</div>
+    </section>
+
+    <section>
+      <h2>Events</h2>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>time</th><th>event</th><th>what happened</th><th>distance (mm)</th></tr></thead>
+          <tbody id="events"></tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button id="evCsv">Download as CSV</button>
+        <button id="evClear">Clear the list</button>
+        <span class="note">The board also keeps every event in door_log.csv.</span>
+      </div>
+    </section>
+
+    <section class="help">
+      <h2>What to try, in order</h2>
+      <ol>
+        <li><b>Calibrate.</b> With the door closed and still, press "Calibrate the closed distance". It should say about 96 mm.</li>
+        <li><b>Open and close.</b> Press the Space bar: the door opens, and a moment later the log says "The door is open" (the sensor checked it). Press Space again: it closes and the log says "The door is closed". If a move did not work you get a retry, then a FAULT.</li>
+        <li><b>Tamper.</b> With the door closed (LOCKED), push it open by hand by about 1 cm. Within a third of a second the page says TAMPER. Let go, and when the door is closed again the alarm ends.</li>
+        <li><b>Blocked.</b> Hold your hand a few centimetres in front of the sensor: the door reads "blocked" and that is TAMPER too.</li>
+        <li><b>Push back.</b> Tick "Push back when forced" and push the door open a little: the motor tries once to push it shut. (If you hold it open, it gives up after one retry and shows a FAULT.)</li>
+      </ol>
+    </section>
+  </main>
+  <script src="libs/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

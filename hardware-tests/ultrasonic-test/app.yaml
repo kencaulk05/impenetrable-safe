@@ -1,0 +1,6 @@
+name: Ultrasonic Sensor Test
+description: Tests the HC-SR04 ultrasonic sensor on its own. A web page on your laptop (port 7000) shows the live distance and a chart; press the SPACE bar to capture 5 seconds of readings and get the average, the spread and the share of good readings, so you can see whether the sensor works (3.3 V or 5 V) and how far the door is. The LED matrix shows the distance as a bar. Writes captures.csv.
+ports: []
+bricks:
+- arduino:web_ui: {}
+icon: 📏

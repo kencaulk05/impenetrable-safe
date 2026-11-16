@@ -1,0 +1,7 @@
+python/door_log.csv
+python/door_config.json
+__pycache__/
+tests/test_sketch
+tests/test_sketch.exe
+tests/state_samples.json
+tests/node_modules/

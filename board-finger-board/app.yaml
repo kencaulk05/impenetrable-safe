@@ -1,0 +1,6 @@
+name: Finger Count on the Board
+description: "Runs the trained finger-counting network on the UNO Q with the webcam. A web page on your laptop (port 7000) shows the camera view with the square, the number of fingers the network sees, how sure it is, how steady the answer is, and how long each step takes on the board. Move the square to match your tape, save it, and press Benchmark to measure the speed. No training happens here; the network was trained on the computer."
+ports: []
+bricks:
+- arduino:web_ui: {}
+icon: ✋

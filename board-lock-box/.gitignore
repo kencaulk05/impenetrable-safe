@@ -1,0 +1,12 @@
+python/lock_config.json
+python/lockbox_log.csv
+python/door_config.json
+python/door_log.csv
+python/roi.json
+python/camera.json
+__pycache__/
+tests/lock_samples.json
+tests/view_samples.json
+tests/test_sketch
+tests/test_sketch.exe
+tests/node_modules/

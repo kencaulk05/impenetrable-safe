@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finger count on the board</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Finger count on the board</h1>
+    <span id="conn" class="chip bad">connecting…</span>
+    <span id="camera" class="chip">camera: ?</span>
+    <span id="steady" class="chip">steady answer: –</span>
+  </header>
+  <main>
+    <div class="grid">
+      <section class="view">
+        <h2>Camera view</h2>
+        <div class="frame">
+          <img id="frame" alt="the camera picture">
+          <div id="roi" class="roi"></div>
+          <div id="nopic" class="nopic">no camera picture yet</div>
+        </div>
+        <div class="note">The green square is what the network looks at. It must sit exactly where the hand will be, on your tape square. <span id="roiSource"></span></div>
+      </section>
+
+      <section class="answer">
+        <h2>What the network sees</h2>
+        <div class="digitrow">
+          <div><div class="label">its answer</div><div id="digit" class="digit">–</div><div id="conf" class="note">&nbsp;</div></div>
+          <div><div class="label">the picture it gets (64 × 64)</div><img id="crop" class="pix" alt="the crop"></div>
+        </div>
+        <div id="bars" class="bars"></div>
+      </section>
+    </div>
+
+    <section>
+      <h2>Camera format</h2>
+      <div class="row">
+        <label>Picture format <select id="fmt"><option value="MJPG">MJPG (compressed: usually faster)</option><option value="YUYV">YUYV (uncompressed)</option><option value="">the camera chooses</option></select></label>
+        <button id="applyFmt">Apply (reopens the camera)</button>
+      </div>
+      <div class="note">The network can do about 36 steps a second on this board, so the "camera pictures per second" below should be about as high. If it is much lower (7.5 was seen with uncompressed pictures), the camera is the slow part: try the other format and watch the number. <span id="fmtNote"></span></div>
+    </section>
+
+    <section>
+      <h2>Speed on this machine</h2>
+      <div class="timing">
+        <div><span class="label">network steps per second</span><b id="fps">–</b></div>
+        <div><span class="label">camera pictures per second</span><b id="camfps">–</b></div>
+        <div><span class="label">cutting out the square</span><b id="prep">–</b> ms</div>
+        <div><span class="label">the network</span><b id="infer">–</b> ms</div>
+        <div><span class="label">age of the picture</span><b id="age">–</b> ms</div>
+      </div>
+      <div class="row">
+        <button id="pauseBtn">Pause the network</button>
+        <span id="pauseNote" class="note">Pausing stops the network but not the camera, so "camera pictures per second" then shows what the camera can do by itself.</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>The square <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> <kbd>+</kbd><kbd>−</kbd></h2>
+      <div class="row">
+        <button id="left">◀</button><button id="up">▲</button><button id="down">▼</button><button id="right">▶</button>
+        <button id="smaller">smaller −</button><button id="bigger">bigger +</button>
+        <label>Tape colour <select id="color"><option value="blue">blue</option><option value="red">red</option><option value="green">green</option><option value="yellow">yellow</option></select></label>
+        <button id="find">Find the tape square</button>
+        <button id="save" class="primary">Save the square</button>
+        <button id="reset">Back to the training square</button>
+      </div>
+      <div class="note">Arrow keys move the square by 4 pixels (hold Shift for 16); the + and − keys make it bigger or smaller. The network was trained on the square at x 108, y 163, side 317 (at 640 × 480): the closer you get to it, the better it works. The saved square is used the next time the app starts.</div>
+      <div id="notice" class="notice"></div>
+    </section>
+
+    <section>
+      <h2>Benchmark</h2>
+      <div class="row">
+        <button id="bench" class="primary">Benchmark (about 5 seconds)</button>
+        <button id="csv">Download as CSV</button>
+        <span class="note">The live view pauses while it measures. The board also keeps every result in board_speed.csv.</span>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>time</th><th>picture</th><th>size</th><th>one step (ms)</th><th>cut out (ms)</th><th>network (ms)</th><th>slowest 5% (ms)</th><th>worst (ms)</th><th>steps / s</th><th>machine</th><th>Python</th></tr></thead>
+          <tbody id="benchRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="help">
+      <h2>What to try, in order</h2>
+      <ol>
+        <li><b>Is the camera found?</b> The "camera" chip at the top should turn green and name the webcam. If it says "no camera found yet", plug the webcam into the hub (the app looks again every 5 seconds).</li>
+        <li><b>Put the square on the tape.</b> Press "Find the tape square", check the green square sits just inside your tape, adjust with the arrow keys and + and −, then press <b>Save</b>. The camera must be fixed in place, like when the training pictures were taken.</li>
+        <li><b>Show your hand</b> in the square with 1, 2, 3, 4 and 5 fingers (thumb folded for 1 to 4, open hand for 5, a fist or an empty square for 0). The answer and the bars should follow, and "steady answer" should turn green after about a second.</li>
+        <li><b>Benchmark.</b> Press the button and write down "one step" and "steps / s". Then run <code>compare/bench_numpy.py</code> on your laptop for the same numbers: that is the UNO Q against the computer.</li>
+      </ol>
+    </section>
+  </main>
+  <script src="libs/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# the pictures show people's hands: keep them out of a public repo
+*.pyc
+__pycache__/
+data/
+demo/
+live_saved/
+lock_config.json
+results/mistakes*.png
+review/

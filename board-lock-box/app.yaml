@@ -1,0 +1,6 @@
+name: Finger Lock Box
+description: "The finger-counting lock, on the UNO Q. Press the button (the SPACE bar on your laptop), show the digit the LED matrix asks for, then show your three-digit code with your fingers under the webcam: a correct code opens the door with the motor and it closes again after 10 seconds. Wrong codes, too many tries and a forced door are handled: three wrong tries lock it out for a while, and forcing the door raises a tamper alarm and blocks finger entry for 15 seconds. A web page on your laptop (port 7000) shows the camera, the door and the log."
+ports: []
+bricks:
+- arduino:web_ui: {}
+icon: 🔐

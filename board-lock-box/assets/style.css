@@ -1,0 +1,51 @@
+:root { --ink:#1f2937; --muted:#5b6575; --line:#dfe4ec; --blue:#2f6fdb; --green:#2e9e5b; --orange:#e08a1e; --red:#d94a4a; --bg:#f4f6fa; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.5; }
+header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 20px; background: #fff; border-bottom: 1px solid var(--line); }
+h1 { margin: 0 auto 0 0; font-size: 1.3rem; } h2 { margin: 0 0 8px; font-size: 1.1rem; }
+main { max-width: 1050px; margin: 0 auto; padding: 16px; }
+.grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; } @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+section { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin: 14px 0; } .grid section { margin: 0; }
+.chip { font-size: .9rem; padding: 3px 12px; border-radius: 99px; background: #e9edf4; color: var(--muted); }
+.chip.good { background: #dcf3e6; color: #1b6e3d; } .chip.bad { background: #fbe0e0; color: #a12b2b; } .chip.warn { background: #fdecd2; color: #98600d; }
+.banner { font-size: 2.3rem; font-weight: 800; padding: 6px 18px; border-radius: 10px; display: inline-block; }
+.banner.locked { background: #e9edf4; color: #1f2937; } .banner.unlocked { background: #dcf3e6; color: #1b6e3d; } .banner.challenge, .banner.entering { background: #e6efff; color: #1d4fa8; }
+.banner.lockout { background: #fdecd2; color: #98600d; } .banner.tamper { background: var(--red); color: #fff; animation: blink 1s infinite; } .banner.unknown { background: #e9edf4; color: var(--muted); }
+@keyframes blink { 50% { opacity: .55; } }
+.hint { color: var(--muted); margin: 6px 0 12px; min-height: 1.5em; }
+.statusrow { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+.label { font-size: .8rem; color: var(--muted); display: block; margin-bottom: 3px; }
+.matrix { display: grid; grid-template-columns: repeat(13, 16px); gap: 3px; background: #1b1f27; padding: 8px; border-radius: 8px; }
+.led { width: 16px; height: 16px; border-radius: 50%; background: #3a3f4b; display: block; } .led.on { background: #ff9a2e; box-shadow: 0 0 6px #ff9a2e; }
+.bigdigit { font-size: 5rem; font-weight: 800; line-height: 1; color: var(--blue); }
+.dots { display: flex; gap: 8px; } .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--blue); background: #fff; } .dot.on { background: var(--blue); }
+.push { font-size: 1.4rem; font-weight: 800; padding: 16px 26px; border-radius: 12px; border: 0; background: var(--blue); color: #fff; cursor: pointer; line-height: 1.2; } .push small { font-weight: 500; font-size: .85rem; }
+.frame { position: relative; width: 100%; max-width: 640px; aspect-ratio: 4 / 3; background: #1b1f27; border-radius: 8px; overflow: hidden; }
+.frame img { width: 100%; height: 100%; display: block; object-fit: fill; }
+.roi { position: absolute; border: 3px solid #35d07f; box-shadow: 0 0 0 1px rgba(0,0,0,.4); pointer-events: none; }
+.nopic { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #aab2c0; }
+.digitrow { display: flex; gap: 24px; align-items: flex-start; margin-top: 10px; flex-wrap: wrap; }
+.digit { font-size: 3.4rem; font-weight: 800; line-height: 1; }
+.pix { width: 96px; height: 96px; image-rendering: pixelated; border: 1px solid var(--line); border-radius: 6px; background: #eef2f9; }
+.bars { margin-top: 8px; } .bar { display: grid; grid-template-columns: 22px 1fr 48px; gap: 8px; align-items: center; margin: 2px 0; font-size: .85rem; }
+.bar .track { background: #eef2f9; border-radius: 6px; height: 12px; overflow: hidden; } .bar .fill { background: var(--blue); height: 100%; width: 0; } .bar.top .fill { background: var(--green); }
+.live { margin: 4px 0; } .big { font-size: 3rem; font-weight: 700; } .unit { font-size: 1.1rem; color: var(--muted); margin: 0 10px 0 6px; }
+.bandchip { font-size: 1rem; padding: 3px 12px; border-radius: 99px; background: #e9edf4; }
+.bandchip.closed { background: #dcf3e6; } .bandchip.ajar { background: #fdecd2; } .bandchip.open { background: #e6efff; } .bandchip.blocked { background: #fbe0e0; }
+.note { font-size: .85rem; color: var(--muted); }
+.row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin: 10px 0; }
+label { display: flex; flex-direction: column; font-size: .85rem; color: var(--muted); gap: 3px; } label.check { flex-direction: row; align-items: center; gap: 6px; padding-bottom: 8px; color: var(--ink); font-size: 1rem; }
+input[type=password], select { font-size: 1rem; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); } input[type=password] { width: 110px; letter-spacing: .3em; }
+button { font-size: 1rem; padding: 8px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; }
+button.primary { background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 600; }
+button.stop { background: var(--red); color: #fff; border-color: var(--red); font-weight: 800; font-size: 1.1rem; padding: 10px 26px; }
+kbd { background: #eef2f9; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; font-size: .85rem; }
+details > summary { cursor: pointer; padding: 4px 0; }
+.notice { padding: 0; min-height: 0; } .notice:not(:empty) { padding: 8px 12px; border-radius: 8px; margin-top: 10px; }
+.notice.info { background: #e6efff; } .notice.ok { background: #dcf3e6; } .notice.warn { background: #fdecd2; }
+.scroll { overflow-x: auto; } table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; } th { background: #eef2f9; }
+td.k-tamper, td.k-tamper_lockout, td.k-fault, td.k-sensor_lost, td.k-lockout, td.k-denied { background: #fbe0e0; } td.k-unlocked, td.k-opened, td.k-closed, td.k-locked, td.k-code_set { background: #eaf6dc; }
+td.k-ignored, td.k-maintenance, td.k-retry, td.k-push_back, td.k-timeout { background: #fdecd2; }
+.stats { display: flex; gap: 22px; flex-wrap: wrap; margin: 10px 0; } .stats > div { min-width: 120px; } .stats b { font-size: 1.5rem; display: block; }
+.help ol { padding-left: 20px; }
